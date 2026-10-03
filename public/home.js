@@ -1,17 +1,20 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js'
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js'
 
-// Konfigurasi web Firebase dibaca dari config.json lewat server (tanpa env, tanpa hardcode).
-const cfg = await fetch('/api/firebase').then(r => r.json()).then(j => j.firebase).catch(() => null)
-if (!cfg) {
-  document.getElementById('gateMsg').textContent = 'Gagal memuat konfigurasi. Muat ulang halaman.'
-  document.getElementById('login').disabled = true
-  throw new Error('config tidak tersedia')
-}
-const app = initializeApp(cfg)
+// Konfigurasi web Firebase memang publik. Keamanan data ada di database.rules.json (tolak semua akses klien)
+// dan di verifikasi token di server. Batasi juga API key di Google Cloud Console (HTTP referrer).
+const app = initializeApp({
+  apiKey: 'AIzaSyDvYFih8bG_uf2t4Jhx49OqodHTLRAXDV0',
+  authDomain: 'kev-ai-a422b.firebaseapp.com',
+  databaseURL: 'https://kev-ai-a422b-default-rtdb.asia-southeast1.firebasedatabase.app',
+  projectId: 'kev-ai-a422b',
+  storageBucket: 'kev-ai-a422b.firebasestorage.app',
+  messagingSenderId: '508810992683',
+  appId: '1:508810992683:web:3abf72ae374c60d76cde6e',
+})
 const auth = getAuth(app)
 const $ = id => document.getElementById(id)
-const state = { sessions: [], id: '', knowledge: [], limit: 20 }
+const state = { sessions: [], id: '', knowledge: [] }
 
 function say(el, text, ok = false) { el.textContent = text || ''; el.classList.toggle('ok', ok) }
 
@@ -53,13 +56,11 @@ function renderSessions() {
   $('key').textContent = state.id || '-'
   $('del').disabled = !state.id
   $('rotate').disabled = !state.id
-  $('add').disabled = state.sessions.length >= state.limit
-  $('open').href = state.id ? '/chat/' + state.id : '#'
+  $('add').disabled = state.sessions.length >= 3
 }
 
 async function loadSessions(preferId) {
-  let { sessions, limit } = await api('/api/session', { google: true })
-  state.limit = limit || 20
+  let { sessions } = await api('/api/session', { google: true })
   if (!sessions.length) { await api('/api/session', { method: 'POST', google: true }); ({ sessions } = await api('/api/session', { google: true })) }
   state.sessions = sessions
   state.id = sessions.some(s => s.id === preferId) ? preferId : sessions[0].id
@@ -76,8 +77,8 @@ $('pick').addEventListener('change', async e => {
 })
 
 $('copy').addEventListener('click', async () => {
-  try { await navigator.clipboard.writeText(state.id); say($('sMsg'), 'ID chat disalin.', true) }
-  catch { say($('sMsg'), 'Gagal menyalin. Blok dan salin ID secara manual.') }
+  try { await navigator.clipboard.writeText(state.id); say($('sMsg'), 'Key disalin.', true) }
+  catch { say($('sMsg'), 'Gagal menyalin. Blok dan salin key secara manual.') }
 })
 
 $('add').addEventListener('click', async () => {
@@ -93,14 +94,14 @@ async function removeCurrent() {
 }
 
 $('del').addEventListener('click', async () => {
-  if (!confirm('Hapus chat ini beserta memori dan latihannya? ID tidak bisa dipakai lagi.')) return
+  if (!confirm('Hapus session ini beserta memori dan latihannya? Key tidak bisa dipakai lagi.')) return
   say($('sMsg'), '')
   try { await removeCurrent(); await loadSessions() } catch (e) { say($('sMsg'), e.message) }
 })
 
 $('rotate').addEventListener('click', async () => {
-  if (state.sessions.length >= state.limit) return say($('sMsg'), 'Jumlah chat sudah penuh. Hapus satu dulu sebelum mengganti ID.')
-  if (!confirm('Buat ID chat baru? ID lama langsung mati. Prompt dan latihan dipindahkan, memori percakapan dimulai dari awal.')) return
+  if (state.sessions.length >= 3) return say($('sMsg'), 'Sudah 3 session. Hapus satu dulu sebelum mengganti key.')
+  if (!confirm('Buat key baru? Key lama langsung mati. Prompt dan latihan dipindahkan, memori percakapan dimulai dari awal.')) return
   say($('sMsg'), '')
   const old = state.id
   try {
@@ -111,7 +112,7 @@ $('rotate').addEventListener('click', async () => {
     state.id = old
     await removeCurrent()
     await loadSessions(sessionId)
-    say($('sMsg'), 'ID baru aktif. ID lama sudah mati.', true)
+    say($('sMsg'), 'Key baru aktif. Key lama sudah mati.', true)
   } catch (e) {
     say($('sMsg'), e.message)
     try { await loadSessions(old) } catch {}
@@ -146,7 +147,7 @@ async function send() {
   $('go').disabled = true
   bubble('user', text)
   $('text').value = ''
-  try { bubble('model', (await api('/api', { method: 'POST', body: { text } })).result) }
+  try { bubble('model', (await api('/api/ai', { method: 'POST', body: { text } })).result) }
   catch (e) { say($('cMsg'), e.message); $('text').value = text }
   finally { $('go').disabled = false }
 }
@@ -154,7 +155,7 @@ $('go').addEventListener('click', send)
 $('text').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } })
 
 $('wipe').addEventListener('click', async () => {
-  if (!confirm('Hapus seluruh memori percakapan chat ini? Prompt dan latihan tetap ada.')) return
+  if (!confirm('Hapus seluruh memori percakapan session ini? Prompt dan latihan tetap ada.')) return
   try { await api('/api/history', { method: 'DELETE' }); $('log').replaceChildren(); say($('cMsg'), 'Memori dihapus.', true) }
   catch (e) { say($('cMsg'), e.message) }
 })
@@ -203,7 +204,7 @@ $('save').addEventListener('click', async () => {
 // ---------- contoh API ----------
 function renderApi() {
   const o = location.origin
-  $('ex1').textContent = `curl -X POST ${o}/api \\\n  -H "x-session-id: ${state.id}" \\\n  -H "content-type: application/json" \\\n  -d '{"text":"Halo, kamu siapa?"}'`
-  $('ex2').textContent = `# Uji cepat lewat URL (ID ikut tercatat di log)\ncurl "${o}/api/${state.id}?text=Halo"\n\n# Halaman chat\n${o}/chat/${state.id}`
-  $('ex3').textContent = `Dokumentasi lengkap: ${o}/docs`
+  $('ex1').textContent = `curl -X POST ${o}/ai \\\n  -H "x-session-id: ${state.id}" \\\n  -H "content-type: application/json" \\\n  -d '{"text":"Halo, kamu siapa?"}'`
+  $('ex2').textContent = `# Uji cepat lewat URL (key ikut tercatat di log, jangan dipakai di produksi)\ncurl "${o}/ai/${state.id}?text=Halo"`
+  $('ex3').textContent = `# Respons\n{ "status": true, "creator": "Kev", "result": "...", "sessionId": "${state.id}" }\n\n# Endpoint lain (header x-session-id sama)\nGET|PUT ${o}/config      prompt default + latihan\nGET|DELETE ${o}/history  riwayat memori`
 }

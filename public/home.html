@@ -4,13 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kev AI</title>
-<link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/home.css">
+<link rel="stylesheet" href="/home.css">
 </head>
 <body>
 <header class="top">
   <h1>Kev AI</h1>
-  <nav class="nav"><a href="/home">Home</a><a href="/docs">Docs</a></nav>
   <div id="who" class="who" hidden>
     <img id="avatar" alt="" width="28" height="28">
     <span id="email"></span>
@@ -20,22 +18,21 @@
 
 <main>
   <section id="gate" class="gate">
-    <h2>Masuk untuk mengambil ID chat</h2>
-    <p>Satu ID chat = satu AI dengan memori dan prompt default sendiri. Tanpa API key: cukup ID ini untuk memanggil API.</p>
+    <h2>Masuk untuk mengambil session-id</h2>
+    <p>Satu session-id = satu AI dengan memori dan prompt default sendiri. Pakai key ini untuk memanggil API.</p>
     <button id="login" class="primary">Masuk dengan Google</button>
     <p id="gateMsg" class="msg" role="alert"></p>
   </section>
 
   <div id="app" class="app" hidden>
-    <aside class="stub" aria-label="Chat">
-      <p class="small">ID chat kamu</p>
+    <aside class="stub" aria-label="Session">
+      <p class="small">Session-id kamu</p>
       <div id="key" class="key" aria-live="polite">-</div>
       <div class="row">
-        <button id="copy" class="primary">Salin ID</button>
-        <a id="open" class="ghost btn" href="#">Buka chat</a>
-        <button id="rotate" class="ghost">Ganti ID</button>
+        <button id="copy" class="primary">Salin key</button>
+        <button id="rotate" class="ghost">Ganti key</button>
       </div>
-      <label class="small" for="pick">Chat lain</label>
+      <label class="small" for="pick">Session lain</label>
       <select id="pick"></select>
       <div class="row">
         <button id="add" class="ghost">Buat baru</button>
@@ -88,6 +85,6 @@
     </section>
   </div>
 </main>
-<script type="module" src="/js/home.js"></script>
+<script type="module" src="/home.js"></script>
 </body>
 </html>

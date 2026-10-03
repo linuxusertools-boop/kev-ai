@@ -1,5 +1,5 @@
 import { wrap, readGoogleToken } from '../lib/http.js'
-import { ApiError, createUserSession, enforceRate, parseSessionId, LIMITS } from '../lib/core.js'
+import { ApiError, createUserSession, enforceRate, parseSessionId } from '../lib/core.js'
 import { getStore } from '../lib/store.js'
 import { verifyGoogleToken } from '../lib/firebase.js'
 
@@ -10,7 +10,7 @@ export default wrap({ methods: ['GET', 'POST', 'DELETE'], cors: 'own' }, async (
   await enforceRate(store, ctx.ipHash, null)
   const { uid } = await verifyGoogleToken(readGoogleToken(req))
 
-  if (req.method === 'GET') return { limit: LIMITS.sessionsPerUser, sessions: (await store.listUserSessions(uid)).map(view) }
+  if (req.method === 'GET') return { sessions: (await store.listUserSessions(uid)).map(view) }
 
   if (req.method === 'POST') {
     const id = await createUserSession(store, uid)

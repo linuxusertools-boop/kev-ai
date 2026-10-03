@@ -4,6 +4,6 @@
   "private": true,
   "type": "module",
   "engines": { "node": ">=20" },
-  "scripts": { "test": "node --test test/core.test.js test/http.test.js test/config.test.js" },
+  "scripts": { "test": "node --test test/core.test.js test/http.test.js" },
   "dependencies": { "firebase-admin": "^13.0.0" }
 }
