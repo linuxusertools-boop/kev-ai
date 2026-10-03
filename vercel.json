@@ -1,31 +1,8 @@
 {
-  "cleanUrls": true,
-  "functions": { "api/ai.js": { "maxDuration": 30 } },
-  "redirects": [{ "source": "/", "destination": "/home", "permanent": false }],
   "rewrites": [
-    { "source": "/ai/:session(KEVAI[0-9A-Za-z]{8})", "destination": "/api/ai?session=:session" },
-    { "source": "/config/:session(KEVAI[0-9A-Za-z]{8})", "destination": "/api/config?session=:session" },
-    { "source": "/history/:session(KEVAI[0-9A-Za-z]{8})", "destination": "/api/history?session=:session" },
-    { "source": "/ai", "destination": "/api/ai" },
-    { "source": "/config", "destination": "/api/config" },
-    { "source": "/history", "destination": "/api/history" },
-    { "source": "/session", "destination": "/api/session" }
-  ],
-  "headers": [
     {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "Referrer-Policy", "value": "no-referrer" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
-        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" },
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; style-src 'self'; img-src 'self' data: https://*.googleusercontent.com; connect-src 'self' https://*.googleapis.com https://kev-ai-a422b.firebaseapp.com; frame-src https://kev-ai-a422b.firebaseapp.com https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
-        }
-      ]
+      "source": "/ai",
+      "destination": "/api/ai"
     }
   ]
 }
