@@ -1,0 +1,23 @@
+{
+  "firebase": {
+    "apiKey": "AIzaSyDvYFih8bG_uf2t4Jhx49OqodHTLRAXDV0",
+    "authDomain": "kev-ai-a422b.firebaseapp.com",
+    "databaseURL": "https://kev-ai-a422b-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "projectId": "kev-ai-a422b",
+    "storageBucket": "kev-ai-a422b.firebasestorage.app",
+    "messagingSenderId": "508810992683",
+    "appId": "1:508810992683:web:3abf72ae374c60d76cde6e",
+    "measurementId": "G-3Y08P1FYMG"
+  },
+  "serviceAccount": {
+    "type": "service_account",
+    "project_id": "kev-ai-a422b",
+    "private_key_id": "ISI_DARI_FILE_SERVICE_ACCOUNT",
+    "private_key": "ISI_DARI_FILE_SERVICE_ACCOUNT",
+    "client_email": "ISI_DARI_FILE_SERVICE_ACCOUNT",
+    "client_id": "ISI_DARI_FILE_SERVICE_ACCOUNT",
+    "token_uri": "https://oauth2.googleapis.com/token"
+  },
+  "allowedOrigins": [],
+  "ipSalt": "ganti-dengan-teks-acak-panjang"
+}

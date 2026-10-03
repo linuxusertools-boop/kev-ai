@@ -1,8 +1,9 @@
 {
   "name": "kev-ai-api",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "private": true,
   "type": "module",
-  "dependencies": {
-    "axios": "^1.6.0"
-  }
+  "engines": { "node": ">=20" },
+  "scripts": { "test": "node --test test/core.test.js test/http.test.js test/config.test.js" },
+  "dependencies": { "firebase-admin": "^13.0.0" }
 }

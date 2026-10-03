@@ -1,0 +1,5 @@
+.doc{max-width:820px;margin:0 auto;padding:0 clamp(16px,4vw,24px) 48px}
+.doc h2{margin-top:28px}
+.doc table{border-collapse:collapse;width:100%;font-size:.92rem;display:block;overflow-x:auto}
+.doc th,.doc td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+.doc code{font:.88em ui-monospace,Menlo,Consolas,monospace;background:var(--bg);padding:1px 5px;border-radius:4px}
